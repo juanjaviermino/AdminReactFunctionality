@@ -1,0 +1,489 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Gabarito:wght@400;500;600;700&family=Merriweather+Sans:wght@400;500;600;700&family=Roboto:wght@100;300;400;500;700&family=Young+Serif&display=swap');
+
+/*--------------GENERAL------------------*/
+:root {
+
+    /*Colors*/
+    --strays-color: #a03982;
+    --strays-white: #f5f5f5;
+    --strays-secondary-color: #c646a1;
+    --strays-color-blue: #503eb6;
+    --excel-color: #0a9b53;
+    --neutral-gray: #898989;
+    --neutral-gray-light: #afafaf;
+    --border-gray: #dee2e6;
+
+    /*Fonts*/
+    --body-font: 'Roboto', sans-serif;
+    --title-font: 'Gabarito', sans-serif;
+    --fancy-font: 'Merriweather Sans', sans-serif;
+
+    /*Height for pages*/
+    --page-height: 92vh;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.no-underline {
+    text-decoration: none;
+}  
+
+.body-text {
+    color: var(--strays-white);
+    font-family: var(--body-font);
+}
+
+.title-text {
+    color: var(--strays-color);
+    font-family: var(--title-font);
+}
+
+/*--------------APP------------------*/
+.app-container{
+    height: 100vh;
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 50px auto;
+    max-height: 100vh;
+    overflow: hidden;
+}
+
+.pages-space{
+    grid-row: 2 / span 1;
+}
+
+.navbar-space{
+    grid-row: 1 / span 1;
+}
+/*--------------WELCOME PAGE------------------*/
+.welcome-page{
+    height: 100%;
+    width: 100%;
+    background-color: #4d46c6;
+    
+    position: relative;
+}
+
+.background-video{
+    object-fit: cover;
+
+    position: absolute;
+    z-index: 1;
+}
+
+.overlay{
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+
+    position: absolute;
+    z-index: 2;
+}
+
+.wlc-text{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+
+    position: absolute;
+    z-index: 3;
+}
+
+.wlc-text h2{
+    font-family: var(--fancy-font);
+    font-size: xx-large;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.wlc-text h3{
+    font-family: var(--body-font);
+    font-size: medium;
+    margin-top: 0;
+    font-weight: 400;
+}
+/*--------------REGISTRATION PAGE------------------*/
+
+.reg-page-container{
+    height: 100%;
+    display: grid;
+    grid-template-columns: 10% 30% 60%;
+}
+
+.reg-message-space{
+    grid-column: 2 / span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.reg-message-space h1{
+    margin: 0;
+    font-family: var(--fancy-font);
+    color: var(--strays-white);
+    font-size: 2.5rem;
+    text-align: center;
+}
+
+.reg-message-space p{
+    margin-top: 20px;
+    font-family: var(--body-font);
+    color: var(--strays-white);
+    font-size: medium;
+    width: 60%;
+    text-align: center;
+}
+
+.reg-form-space{
+    grid-column: 3 / span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.reg-form{
+    background-color: #f5f5f559;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80%;
+    width: 60%;
+}
+
+.reg-form h2{
+    color: white;
+    font-family: var(--title-font);
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.form{
+    width: 70%;
+    margin:0;
+    padding: 5%;
+    display: flex;
+    flex-direction: column;
+}
+
+.form select{
+    
+}
+
+input:focus{
+    
+}
+
+select:focus{
+    border: 2px solid var(--strays-color);
+    background-color: #f0f0f0;
+    outline: none;
+}
+
+
+
+
+.btn-action{
+    color: white;
+    background-color: var(--strays-color);
+    font-family: var(--title-font);
+    font-weight: 400;
+}
+
+.btn-action:hover{
+    background-color: var(--strays-secondary-color);
+    border-width: 0;
+}
+
+.form-link{
+    color: var(--strays-white);
+    font-family: var(--body-font);
+    font-weight: 400;
+    font-size: small;
+    margin: 8px auto 0 auto;
+}
+
+.form-link:hover{
+    color: lightgray;
+}
+
+/*--------------LOGIN PAGE------------------*/
+
+.log-page-container{
+    height: 100%;
+    display: grid;
+    grid-template-columns: 10% 30% 60%;
+}
+
+.log-message-space{
+    grid-column: 2 / span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.log-message-space h1{
+    margin: 0;
+    font-family: var(--fancy-font);
+    color: var(--strays-white);
+    font-size: 2.5rem;
+    text-align: center;
+}
+
+.log-message-space p{
+    margin-top: 20px;
+    font-family: var(--body-font);
+    color: var(--strays-white);
+    font-size: medium;
+    width: 85%;
+    text-align: center;
+}
+
+.log-form-space{
+    grid-column: 3 / span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/*--------------PRODUCTS PAGE------------------*/
+.prod-page-container{
+    height: 100%;
+    display: grid;
+    grid-template-columns: 10% 30% 50% 10%;
+    grid-template-rows: 50% 50%;
+}
+
+.prod-message-space{
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.prod-message-space h1{
+    margin: 0;
+    font-family: var(--fancy-font);
+    color: var(--strays-white);
+    font-size: 2.5rem;
+    text-align: center;
+}
+
+.prod-message-space p{
+    margin-top: 20px;
+    font-family: var(--body-font);
+    color: var(--strays-white);
+    font-size: medium;
+    width: 60%;
+    text-align: center;
+}
+
+.prod-form-space{
+    grid-column: 3 / span 1;
+    grid-row: 1 / span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.prod-form{
+    background-color: #f5f5f559;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80%;
+    width: 60%;
+}
+
+.prod-form h2{
+    color: white;
+    font-family: var(--title-font);
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.products-table-container {
+    grid-column: 2 / span 2;
+    grid-row: 2 / span 1;
+    max-height: 40vh;
+    overflow-y: auto;
+    border-radius: 10px;
+}
+
+.products-table{
+    background-color: #f5f5f5;
+    padding: 20px;
+    width: 100%;
+}
+
+.table-titles th{
+    text-align: center;
+    color: #630e4b;
+}
+
+.table-row{
+    margin: 1px;
+    background-color: #d1d1d1;
+    border-radius: 10px;
+}
+
+.table-row td{
+    text-align: center;
+}
+
+.btn-delete{
+    color: white;
+    background-color: var(--strays-color);
+    font-family: var(--title-font);
+    font-weight: 400;
+}
+
+.btn-delete:hover{
+    background-color: var(--strays-secondary-color);
+    border-width: 0;
+}
+
+/*--------------USERS PAGE------------------*/
+.seller-page-container{
+    height: 100%;
+    display: grid;
+    grid-template-columns: 10% 80% 10%;
+    grid-template-rows: 10% 30% 50% 10%;
+}
+
+.seller-message-space{
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.seller-message-space h1{
+    margin: 0;
+    font-family: var(--fancy-font);
+    color: var(--strays-white);
+    font-size: 2.5rem;
+    text-align: center;
+}
+
+.seller-message-space p{
+    margin-top: 20px;
+    font-family: var(--body-font);
+    color: var(--strays-white);
+    font-size: medium;
+    width: 60%;
+    text-align: center;
+}
+
+.sellers-table-container {
+    grid-column: 2 / span 1;
+    grid-row: 3 / span 1;
+    max-height: 50vh;
+    overflow-y: auto;
+    border-radius: 10px;
+}
+
+.sellers-table{
+    background-color: #f5f5f5;
+    padding: 20px;
+    width: 100%;
+    height: 50vh;
+}
+
+/*--------------SALES PAGE------------------*/
+.sales-message-space{
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.sales-message-space h1{
+    margin: 0;
+    font-family: var(--fancy-font);
+    color: var(--strays-white);
+    font-size: 2.5rem;
+    text-align: center;
+}
+
+.sales-message-space p{
+    margin-top: 20px;
+    font-family: var(--body-font);
+    color: var(--strays-white);
+    font-size: medium;
+    width: 60%;
+    text-align: center;
+}
+
+.sales-form-space{
+    grid-column: 3 / span 1;
+    grid-row: 1 / span 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sales-form{
+    background-color: #f5f5f559;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80%;
+    width: 60%;
+}
+
+.sales-form h2{
+    color: white;
+    font-family: var(--title-font);
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.sales-table-container {
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+    max-height: 40vh;
+    overflow-y: auto;
+    border-radius: 10px;
+}
+
+/*----------------TABLES--------------------*/
+
+
+.tabla {
+    
+}
+
+.tabla td {
+    
+}
+
+.tabla span {
+    
+}
+
+
+

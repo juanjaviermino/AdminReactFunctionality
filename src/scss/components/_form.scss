@@ -1,0 +1,75 @@
+.form{
+    position: relative;
+    overflow: hidden;
+    height: 80%;
+    width: 60%;
+    background-color: $strays-white-t;
+    border-radius: 10px;
+    @include flex-column(center, center);
+
+    h2{
+        margin: 0;
+        @include font-style(24px, 'reg', $strays-white, $title-font);
+        text-align: center;
+    }
+
+    &__fields{
+        width: 70%;
+        margin:0;
+        padding: 5%;
+        @include flex-column(center, center);
+        gap: 5px;
+
+        input {
+            width: 100%;
+            height: 35px;
+            padding: 3px 10px;
+            border-radius: 10px;
+            @include font-style(14px, 'thin', $strays-black, $body-font);
+            border-width: 0;
+
+            &:focus{
+                border: 2px solid var(--strays-color);
+                background-color: #f0f0f0;
+                outline: none;
+            }
+        }
+
+        button {
+            margin-top: 15px;
+        }
+
+        select {
+            width: 100%;
+            height: 35px;
+            padding: 3px 10px;
+            border-radius: 10px;
+            @include font-style(14px, 'thin', $strays-black, $body-font);
+            border-width: 0;
+        }
+
+        label {
+            @include font-style(12px, 'bold', $strays-white, $body-font);
+            margin: 0 auto 0 10px;
+        }
+
+        span {
+            color: $alert-color;
+        }
+
+        &-link{
+            @include font-style(14px, 'reg', $strays-white, $body-font);
+            margin-top: 8px;
+
+            &:hover{
+                color: lightgray;
+            }
+        }
+    }
+
+    &__udbuttons{
+        width: 100%;
+        @include flex-row(space-between, center);
+        gap: 20px;
+    }
+}
