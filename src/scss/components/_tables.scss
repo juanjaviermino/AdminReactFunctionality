@@ -3,10 +3,10 @@
     position: relative;
     min-width: 90%;
     max-width: 100%;
-    max-height: 100%;
+    max-height: 80vh;
     border: 0 ;
     border-radius: 10px;
-    overflow-x: auto;
+    overflow: hidden;
 
     td{
         font-family: var(--body-font);
@@ -48,32 +48,39 @@
 
 .rounded-icon-btn {
     border-radius: 15px;
-    background-color: var(--strays-color);
+    background-color: $strays-color;
     border-width: 0;
     height: 30px;
     width: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include flex(center, center);
     padding: 0;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-}
+    margin: 0;
 
-.rounded-icon-btn:active {
-    transform: scale(0.90);
-}
+    &:hover{
+        background-color: $strays-secondary-color;
+    }
 
-.rounded-icon-btn:focus {
-    outline: none;
-    border-width: 0;
+    &:focus{
+        outline: none;
+        border-width: 0;
+    }
+
+    &:active{
+        transform: scale(0.90);
+    }
 }
 
 #dwn-excel {
-    background-color: var(--excel-color);
+    background-color: $excel-color;
+
+    &:hover{
+        background-color: $excel-color-light;
+    }
 }
 
 #cancel {
-    background-color: var(--neutral-gray);
+    background-color: $neutral-gray;
 }
 
 .spinner {
@@ -81,8 +88,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    border-left-color: var(--strays-color);
-
+    border-left-color: $strays-color;
     animation: spin 1s linear infinite;
 }
 
@@ -92,21 +98,17 @@
     background-color: rgba(101, 105, 111, 0.7);
     width: 100%;
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include flex(center, center);
 }
 
 .stale-data-msg{
-    background-color: var(--strays-color-blue);
-    display: flex;
-    justify-content:center;
-    align-items: center;
+    background-color: $strays-color-blue;
+    @include flex(center, center);
     gap: 10px;
     padding: 2px; 
 }
 
 .stale-data-msg span {
     color: white;
-    font-family: var(--body-font);
+    font-family: $body-font;
 }

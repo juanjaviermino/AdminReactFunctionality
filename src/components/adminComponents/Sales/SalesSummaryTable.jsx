@@ -8,70 +8,27 @@ import { Toast } from 'primereact/toast';
 import ExcelJS from 'exceljs';
 import saveAs from 'file-saver';
 
-import { useUsers } from '../../../services/useUsers';
-
-function UsersTable(props) {
+function SalesSummaryTable({summary}) {
 
     // --------------- Setup (Servicios, Contextos, Referencias) -----------------------------------
 
     const toast = useRef(null);
-    const { users, error, isLoading, isValidating, refresh } = useUsers(); // EDITABLE
 
     // --------------- Estados ---------------------------------------------------------------------
 
     const [filters, setFilters] = useState(null);
     const [globalFilterValue, setGlobalFilterValue] = useState('');
-    const [isRefreshing, setIsRefreshing] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null); // Objeto seleccionado: EDITABLE
-
-    // --------------- Funciones necesarias para persistencia ----------------------------------------
-
-    useEffect(() => {
-        const savedState = sessionStorage.getItem('user-table-state');
-
-        if (savedState) {
-            // Parse the saved state
-            const parsedState = JSON.parse(savedState);
-
-            // Check if filters are saved and set them
-            if (parsedState.filters) {
-                setFilters(parsedState.filters);
-
-                // If global filter is set, update globalFilterValue
-                if (parsedState.filters.global && parsedState.filters.global.value) {
-                    setGlobalFilterValue(parsedState.filters.global.value);
-                }
-            }
-        } else {
-            // Initialize with default filters if no saved state
-            initFilters();
-        }
-    }, []); // ESPECIFICO
 
     // --------------- Funciones especificas del componente ------------------------------------------
     
-    useEffect(() => {
-        if (error) {
-            toast.current.show({
-                severity: 'info',
-                summary: 'Aviso',
-                detail: 'Hubo un problema con el servidor, intenta más tarde',
-                life: 3000,
-            });
-        }
-    }, [error]); // Genera el toast con el error: GENERAL
-    const refreshData = () => {
-        setIsRefreshing(true);
-        refresh();
-    }; // Refresca los datos: GENERAL
-    useEffect(() => {
-        if (isRefreshing) {
-            setIsRefreshing(false);
-        }
-    }, [isValidating]); // Cambia el estado de refreshing: GENERAL
+    useEffect(()=>{
+        initFilters();
+    },[])
+
     const clearFilter = () => {
         initFilters();
     }; // Función para limpiar todos los filtros: GENERAL
+
     const onGlobalFilterChange = (e) => {
         const value = e.target.value;
         let _filters = { ...filters };
@@ -84,22 +41,14 @@ function UsersTable(props) {
     const initFilters = () => {
         setFilters({
             global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-            id: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-            ciudad: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-            name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-            lastname: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-            email: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-            cellphone: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+            user_name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+            total_ammount: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] }
         }); // EDITABLE
         setGlobalFilterValue('');
     }; // Función para restaurar e inicializar los filtros: ESPECIFICO
     const cols = [
-        { header: 'ID', dataKey: 'id' },
-        { header: 'Ciudad', dataKey: 'ciudad' },
-        { header: 'Nombre', dataKey: 'name' },
-        { header: 'Apellido', dataKey: 'lastname' },
-        { header: 'E-mail', dataKey: 'email' },
-        { header: 'Teléfono', dataKey: 'cellphone' },
+        { header: 'Nombre del usuario', dataKey: 'user_name' },
+        { header: 'Cantidad total vendida', dataKey: 'total_ammount' }
     ]; // Columnas que se expotarán en el PDF: ESPECIFICO
     const exportPdf = () => {
         import('jspdf').then((jsPDF) => {
@@ -108,16 +57,16 @@ function UsersTable(props) {
 
                 doc.autoTable({
                     head: [cols.map((column) => column.header)],
-                    body: users.map((row) => cols.map((column) => row[column.dataKey])), // EDITABLE
+                    body: summary.map((row) => cols.map((column) => row[column.dataKey])), // EDITABLE
                 });
 
-                doc.save('Usuarios.pdf'); // EDITABLE
+                doc.save('Resumen de ventas.pdf'); // EDITABLE
             });
         });
     }; // Función para exportar a PDF: ESPECIFICO
     const exportExcel = () => {
         const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Usuarios'); // EDITABLE
+        const worksheet = workbook.addWorksheet('Resumen de ventas'); // EDITABLE
 
         const headerRow = [];
         cols.forEach((col) => {
@@ -125,19 +74,15 @@ function UsersTable(props) {
         });
         worksheet.addRow(headerRow);
 
-        users.forEach((user) => { //EDITABLE
+        summary.forEach((sale) => { //EDITABLE
             worksheet.addRow([
-                user.id,
-                user.ciudad,
-                user.name,
-                user.lastname,
-                user.email,
-                user.cellphone,
+                sale.user_name,
+                sale.total_ammount,
             ]);
         }); // EDITABLE
 
         workbook.xlsx.writeBuffer().then((buffer) => {
-            saveAsExcelFile(buffer, 'Usuarios'); // EDITABLE
+            saveAsExcelFile(buffer, 'Resumen de ventas'); // EDITABLE
         });
     }; // Función para exportar a Excel: ESPECIFICO
     const saveAsExcelFile = (buffer, fileName) => {
@@ -159,9 +104,6 @@ function UsersTable(props) {
                         <i className="pi pi-search search-input-icon" style={{ fontSize: '0.8rem', margin: '0' }}></i>
                         <InputText className="search-input" value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar" />
                     </span>
-                    <Button className="rounded-icon-btn" onClick={refreshData}>
-                        <i className="pi pi-refresh" style={{ fontSize: '0.8rem', margin: '0' }}></i>
-                    </Button>
                     <Button onClick={clearFilter} className="rounded-icon-btn" type="button" rounded>
                         <i className="pi pi-filter-slash" style={{ fontSize: '0.8rem', margin: '0' }}></i>
                     </Button>
@@ -190,58 +132,21 @@ function UsersTable(props) {
     const header = renderHeader(); // Renderizar el header: GENERAL
     const columnsData = [
         {
-            nombrevar: "id",
-            header: "Código",
-            filterPlaceholder: "Buscar por código",
+            nombrevar: "user_name",
+            header: "Usuario",
+            filterPlaceholder: "Buscar por nombre de usuario",
         },
         {
-            nombrevar: "ciudad",
-            header: "Ciudad",
-            filterPlaceholder: "Buscar por ciudad",
-        },
-        {
-            nombrevar: "name",
-            header: "Nombre",
-            filterPlaceholder: "Buscar por nombre",
-        },
-        {
-            nombrevar: "lastname",
-            header: "Apellido",
-            filterPlaceholder: "Buscar por apellido",
-        },
-        {
-            nombrevar: "email",
-            header: "E-mail",
-            filterPlaceholder: "Buscar por e-mail",
-        },
-        {
-            nombrevar: "cellphone",
-            header: "Teléfono",
-            filterPlaceholder: "Buscar por teléfono",
+            nombrevar: "total_ammount",
+            header: "Cantidad vendida",
+            filterPlaceholder: "Buscar por cantidad",
         }
-    ]; // Contiene los parámetros para crear columnas: ESPECIFICO
-    const onRowSelect = (event) => {
-        props.onSelect(event.data.id); // EDITABLE
-    }; // maneja la selección de la fila: ESPECIFICO
-    const onRowUnselect = (event) => {
-        props.onUnselect(event.data.id); // EDITABLE
-    }; // maneja la selección de la fila: ESPECIFICO
+    ]; 
 
     return (
         <div className="table">
-            <Toast ref={toast} />
-            {(isLoading || (isRefreshing && isValidating)) &&
-                <div className="spinnercontainer">
-                    <div className="spinnercontainer__spinner" />
-                </div>
-            }
-            {error &&
-                <div className="stale-data-msg">
-                    <i className="pi pi-exclamation-circle" style={{ fontSize: '0.8rem', margin: '0', color: 'white' }}></i>
-                    <span><strong>Los datos pueden estar desactualizados</strong> | intenta recargar la tabla</span>
-                </div>}
             <DataTable
-                value={users} // EDITABLE
+                value={summary} // EDITABLE
                 resizableColumns
                 removableSort
                 paginator
@@ -251,19 +156,13 @@ function UsersTable(props) {
                 rows={25}
                 rowsPerPageOptions={[5, 10, 25, 50]}
                 size="small"
-                dataKey="id" // EDITABLE
+                dataKey="user_name" // EDITABLE
                 filters={filters}
-                globalFilterFields={['id', 'name', 'lastname', 'ciudad', 'email', 'cellphone']} // EDITABLE
+                globalFilterFields={['user_name', 'total_ammount']} // EDITABLE
                 header={header}
-                emptyMessage="No se encontraron usuarios" // EDITABLE
+                emptyMessage="No hay un resumen para mostrar" // EDITABLE
                 selectionMode="single"
-                selection={selectedItem} 
-                onSelectionChange={(e) => setSelectedItem(e.value)} 
-                onRowSelect={onRowSelect}
-                onRowUnselect={onRowUnselect}
                 metaKeySelection={false}
-                stateStorage="session" 
-                stateKey="user-table-state" // EDITABLE
             >
                 {columnsData.map((column, index) => (
                     <Column
@@ -283,4 +182,4 @@ function UsersTable(props) {
     );
 }
 
-export default UsersTable;
+export default SalesSummaryTable;

@@ -24,5 +24,9 @@
         @include flex-row(start,center);
         gap: 30px;
         padding: 0 15px;
+
+        .navbar__items{
+            width: 100%;
+        }
     }
 }

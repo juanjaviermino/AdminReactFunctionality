@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 const apiEndpoint = import.meta.env.VITE_APP_API;
-const API_BASE_URL = `${apiEndpoint}/users`;
+const API_BASE_URL = `${apiEndpoint}/sales`;
 
 const fetcher = async (url, options) => {
     const res = await fetch(url, options);
@@ -15,7 +15,7 @@ const fetcher = async (url, options) => {
     return res.json();
 };
 
-const useUsers = () => {
+const useSales = () => {
     const { data, error, isValidating, isLoading, mutate } = useSWR(API_BASE_URL, fetcher, {
         errorRetryInterval: 10000,
     });
@@ -30,31 +30,14 @@ const useUsers = () => {
                 body: JSON.stringify(obj),
             });
 
-            if (response.status === 201) {
+            if (response.status === 200) {
                 mutate();
             }
 
             return response.status;
 
         } catch (error) {
-            throw new Error(error);
-        }
-    };
-
-    const validatePassword = async (obj) => {
-        try {
-            const VALIDATE_URL = `${API_BASE_URL}/authenticate`;
-            const response = await fetch(VALIDATE_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(obj),
-            });
-
-            return response.status;
-        } catch (error) {
-            throw new Error(error);
+            throw new Error("Hubo un error al ingresar la provincia");
         }
     };
 
@@ -75,7 +58,7 @@ const useUsers = () => {
             return response.status;
 
         } catch (error) {
-            throw new Error(error);
+            throw new Error("Hubo un error al editar la provincia");
         }
     };
 
@@ -93,12 +76,12 @@ const useUsers = () => {
             return response.status;
 
         } catch (error) {
-            throw new Error(error);
+            throw new Error("Hubo un error al eliminar la provincia");
         }
     };
 
     return {
-        users: data,
+        sales: data,
         isLoading,
         error,
         isValidating,
@@ -106,8 +89,7 @@ const useUsers = () => {
         createObject,
         updateObject,
         deleteObject,
-        validatePassword,
     };
 };
 
-export { useUsers };
+export { useSales };

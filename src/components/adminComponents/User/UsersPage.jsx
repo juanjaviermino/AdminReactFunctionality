@@ -1,177 +1,181 @@
 import React, { useEffect, useState, useRef } from 'react';
-import CiudadesTable from './UsersTable'; // EDITABLE
-import { Toast } from 'primereact/toast';
-const apiEndpoint = import.meta.env.VITE_APP_API;
-const API_BASE_URL = `${apiEndpoint}/ciudad`;
+import UsersTable from './UsersTable'; // EDITABLE
+// import { Toast } from 'primereact/toast';
+// const apiEndpoint = import.meta.env.VITE_APP_API;
+// const API_BASE_URL = `${apiEndpoint}/ciudad`;
 
-import { useCiudades } from '../../../services/useCiudades';
-import { useProvincias } from '../../../services/useProvincias';
+// import { useCiudades } from '../../../services/useCiudades';
+// import { useProvincias } from '../../../services/useProvincias';
 
-function CiudadesPage () {
+function UsersPage () {
 
-    const toast = useRef(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [object, setObject] = useState({});
-    const [selectedId, setSelectedId] = useState(null);
-    const { createObject, updateObject, deleteObject } = useCiudades(); //EDITABLE
-    const { provincias } = useProvincias(); //EDITABLE
-    const [data, setData] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [selectedProvinciaId, setSelectedProvinciaId] = useState('9999');
+    // const toast = useRef(null);
+    // const [isEditing, setIsEditing] = useState(false);
+    // const [object, setObject] = useState({});
+    // const [selectedId, setSelectedId] = useState(null);
+    // const { createObject, updateObject, deleteObject } = useCiudades(); //EDITABLE
+    // const { provincias } = useProvincias(); //EDITABLE
+    // const [data, setData] = useState(null);
+    // const [isLoading, setIsLoading] = useState(false);
+    // const [selectedProvinciaId, setSelectedProvinciaId] = useState('9999');
 
-    useEffect(()=>{
-        setObject({ ...object, ['id_provincia']: selectedProvinciaId }); // EDITABLE
-    }, [selectedProvinciaId]);
+    // useEffect(()=>{
+    //     setObject({ ...object, ['id_provincia']: selectedProvinciaId }); // EDITABLE
+    // }, [selectedProvinciaId]);
 
-    useEffect(() => {
-        console.log(object);
-    }, [object])
+    // useEffect(() => {
+    //     console.log(object);
+    // }, [object])
 
-    const getData = async () => {
-        setIsLoading(true); // Set loading to true before the request starts
-        try {
-            const response = await fetch(`${API_BASE_URL}/${selectedId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                // Remove the body from GET request as it's not needed
-            });
+    // const getData = async () => {
+    //     setIsLoading(true); // Set loading to true before the request starts
+    //     try {
+    //         const response = await fetch(`${API_BASE_URL}/${selectedId}`, {
+    //             method: 'GET',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             // Remove the body from GET request as it's not needed
+    //         });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! status: ${response.status}`);
+    //         }
 
-            const data = await response.json();
-            setData(data); // Set the data from the response
-        } catch (error) {
-            console.error("Fetching data failed", error);
-            setIsEditing(false);
-            setData(null); // Reset the data on error
-        } finally {
-            setIsLoading(false); // Set loading to false after the request finishes
-        }
-    };
+    //         const data = await response.json();
+    //         setData(data); // Set the data from the response
+    //     } catch (error) {
+    //         console.error("Fetching data failed", error);
+    //         setIsEditing(false);
+    //         setData(null); // Reset the data on error
+    //     } finally {
+    //         setIsLoading(false); // Set loading to false after the request finishes
+    //     }
+    // };
 
-    useEffect(()=>{
-        if(isEditing){
-            setSelectedProvinciaId(data?.id_provincia);
-            const dataETL = {
-                nombre: data?.nombre,
-                id_provincia: data?.id_provincia  
-            };
-            setObject(dataETL);
-        }else{
-            setObject({});
-        }
-    }, [isEditing, data]);
+    // useEffect(()=>{
+    //     if(isEditing){
+    //         setSelectedProvinciaId(data?.id_provincia);
+    //         const dataETL = {
+    //             nombre: data?.nombre,
+    //             id_provincia: data?.id_provincia  
+    //         };
+    //         setObject(dataETL);
+    //     }else{
+    //         setObject({});
+    //     }
+    // }, [isEditing, data]);
 
-    const resetStates = () => {
-        setObject({});
-        setIsEditing(false);
-        setSelectedId(null);
-        setSelectedProvinciaId('9999');
-    }
+    // const resetStates = () => {
+    //     setObject({});
+    //     setIsEditing(false);
+    //     setSelectedId(null);
+    //     setSelectedProvinciaId('9999');
+    // }
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setObject({ ...object, [name]: value }); // EDITABLE
-    };
+    // const handleInputChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setObject({ ...object, [name]: value }); // EDITABLE
+    // };
 
-    useEffect(()=>{
-        if(selectedId){
-            getData();
-        }
-    }, [selectedId])
+    // useEffect(()=>{
+    //     if(selectedId){
+    //         getData();
+    //     }
+    // }, [selectedId])
 
-    const onSelect = (obj) => {
-        setSelectedId(obj);
-        setIsEditing(true);
-    };
+    // const onSelect = (obj) => {
+    //     setSelectedId(obj);
+    //     setIsEditing(true);
+    // };
 
-    const onUnselect = (e) => {
-        setIsEditing(false);
-    };
+    // const onUnselect = (e) => {
+    //     setIsEditing(false);
+    // };
 
-    const handleCreate = async (e) =>{
-        e.preventDefault();
-        // Intentar el request usando el servicio
-        try {
-            const response = await createObject(object);
-            if (response === 201) {
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Éxito',
-                    detail: 'Se añadió el registro con éxito',
-                    life: 3000,
-                });
-                resetStates();
-            }
-        } catch (error) {
-            toast.current.show({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Ocurrió un error',
-                life: 3000,
-            });
-        }
-    };
+    // const handleCreate = async (e) =>{
+    //     e.preventDefault();
+    //     // Intentar el request usando el servicio
+    //     try {
+    //         const response = await createObject(object);
+    //         if (response === 201) {
+    //             toast.current.show({
+    //                 severity: 'success',
+    //                 summary: 'Éxito',
+    //                 detail: 'Se añadió el registro con éxito',
+    //                 life: 3000,
+    //             });
+    //             resetStates();
+    //         }
+    //     } catch (error) {
+    //         toast.current.show({
+    //             severity: 'error',
+    //             summary: 'Error',
+    //             detail: 'Ocurrió un error',
+    //             life: 3000,
+    //         });
+    //     }
+    // };
 
-    const handleEdit = async (e) => {
-        e.preventDefault();
-        // Intentar el request usando el servicio
-        try {
-            const response = await updateObject(selectedId, object);
-            if (response === 200) {
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Éxito',
-                    detail: 'Se editó el registro con éxito',
-                    life: 3000,
-                });
-                resetStates();
-            }
-        } catch (error) {
-            toast.current.show({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Ocurrió un error',
-                life: 3000,
-            });
-        }
-    }; 
+    // const handleEdit = async (e) => {
+    //     e.preventDefault();
+    //     // Intentar el request usando el servicio
+    //     try {
+    //         const response = await updateObject(selectedId, object);
+    //         if (response === 200) {
+    //             toast.current.show({
+    //                 severity: 'success',
+    //                 summary: 'Éxito',
+    //                 detail: 'Se editó el registro con éxito',
+    //                 life: 3000,
+    //             });
+    //             resetStates();
+    //         }
+    //     } catch (error) {
+    //         toast.current.show({
+    //             severity: 'error',
+    //             summary: 'Error',
+    //             detail: 'Ocurrió un error',
+    //             life: 3000,
+    //         });
+    //     }
+    // }; 
 
-    const handleDelete = async (e) =>{
-        e.preventDefault();
-        // Intentar el request usando el servicio
-        try {
-            const response = await deleteObject(selectedId);
-            if (response === 200) {
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Éxito',
-                    detail: 'Se eliminó el registro con éxito',
-                    life: 3000,
-                });
-                resetStates();
-            }
-        } catch (error) {
-            toast.current.show({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Ocurrió un error',
-                life: 3000,
-            });
-        }
-    };
+    // const handleDelete = async (e) =>{
+    //     e.preventDefault();
+    //     // Intentar el request usando el servicio
+    //     try {
+    //         const response = await deleteObject(selectedId);
+    //         if (response === 200) {
+    //             toast.current.show({
+    //                 severity: 'success',
+    //                 summary: 'Éxito',
+    //                 detail: 'Se eliminó el registro con éxito',
+    //                 life: 3000,
+    //             });
+    //             resetStates();
+    //         }
+    //     } catch (error) {
+    //         toast.current.show({
+    //             severity: 'error',
+    //             summary: 'Error',
+    //             detail: 'Ocurrió un error',
+    //             life: 3000,
+    //         });
+    //     }
+    // };
 
     return(
         <section className="adminpage gradient-background">
-            <Toast ref={toast} />
+            {/* <Toast ref={toast} /> */}
             <div className="adminpage__header"> 
-                <h3>Ciudades</h3>
+                <h3>Usuarios</h3>
             </div>
-            <div className="adminpage__form">
+            <div className="adminpage__table--users">
+                <UsersTable />
+            </div>
+            
+            {/* <div className="adminpage__form">
                 <div className="form">
                     {(isLoading && isEditing)  &&
                         <div className="spinnercontainer">
@@ -227,9 +231,9 @@ function CiudadesPage () {
             </div>
             <div className="adminpage__table">
                 <CiudadesTable onSelect={onSelect} onUnselect={onUnselect} />
-            </div>
+            </div> */}
         </section>
     );
 }
 
-export default CiudadesPage;
+export default UsersPage;

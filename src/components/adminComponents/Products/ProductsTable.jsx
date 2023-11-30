@@ -8,14 +8,14 @@ import { Toast } from 'primereact/toast';
 import ExcelJS from 'exceljs';
 import saveAs from 'file-saver';
 
-import { useUsers } from '../../../services/useUsers';
+import { useProducts } from '../../../services/useProducts';
 
-function UsersTable(props) {
+function ProductsTable(props) {
 
     // --------------- Setup (Servicios, Contextos, Referencias) -----------------------------------
 
     const toast = useRef(null);
-    const { users, error, isLoading, isValidating, refresh } = useUsers(); // EDITABLE
+    const { products, error, isLoading, isValidating, refresh } = useProducts(); // EDITABLE
 
     // --------------- Estados ---------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ function UsersTable(props) {
     // --------------- Funciones necesarias para persistencia ----------------------------------------
 
     useEffect(() => {
-        const savedState = sessionStorage.getItem('user-table-state');
+        const savedState = sessionStorage.getItem('prod-table-state');
 
         if (savedState) {
             // Parse the saved state
@@ -84,22 +84,14 @@ function UsersTable(props) {
     const initFilters = () => {
         setFilters({
             global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-            id: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-            ciudad: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
             name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-            lastname: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-            email: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-            cellphone: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+            id: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] }
         }); // EDITABLE
         setGlobalFilterValue('');
     }; // Función para restaurar e inicializar los filtros: ESPECIFICO
     const cols = [
         { header: 'ID', dataKey: 'id' },
-        { header: 'Ciudad', dataKey: 'ciudad' },
-        { header: 'Nombre', dataKey: 'name' },
-        { header: 'Apellido', dataKey: 'lastname' },
-        { header: 'E-mail', dataKey: 'email' },
-        { header: 'Teléfono', dataKey: 'cellphone' },
+        { header: 'Nombre', dataKey: 'name' }
     ]; // Columnas que se expotarán en el PDF: ESPECIFICO
     const exportPdf = () => {
         import('jspdf').then((jsPDF) => {
@@ -108,16 +100,16 @@ function UsersTable(props) {
 
                 doc.autoTable({
                     head: [cols.map((column) => column.header)],
-                    body: users.map((row) => cols.map((column) => row[column.dataKey])), // EDITABLE
+                    body: products.map((row) => cols.map((column) => row[column.dataKey])), // EDITABLE
                 });
 
-                doc.save('Usuarios.pdf'); // EDITABLE
+                doc.save('Productos.pdf'); // EDITABLE
             });
         });
     }; // Función para exportar a PDF: ESPECIFICO
     const exportExcel = () => {
         const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Usuarios'); // EDITABLE
+        const worksheet = workbook.addWorksheet('Productos'); // EDITABLE
 
         const headerRow = [];
         cols.forEach((col) => {
@@ -125,19 +117,15 @@ function UsersTable(props) {
         });
         worksheet.addRow(headerRow);
 
-        users.forEach((user) => { //EDITABLE
+        products.forEach((prod) => { //EDITABLE
             worksheet.addRow([
-                user.id,
-                user.ciudad,
-                user.name,
-                user.lastname,
-                user.email,
-                user.cellphone,
+                prod.id,
+                prod.name,
             ]);
         }); // EDITABLE
 
         workbook.xlsx.writeBuffer().then((buffer) => {
-            saveAsExcelFile(buffer, 'Usuarios'); // EDITABLE
+            saveAsExcelFile(buffer, 'Products'); // EDITABLE
         });
     }; // Función para exportar a Excel: ESPECIFICO
     const saveAsExcelFile = (buffer, fileName) => {
@@ -195,29 +183,9 @@ function UsersTable(props) {
             filterPlaceholder: "Buscar por código",
         },
         {
-            nombrevar: "ciudad",
-            header: "Ciudad",
-            filterPlaceholder: "Buscar por ciudad",
-        },
-        {
             nombrevar: "name",
-            header: "Nombre",
+            header: "Nombre del producto",
             filterPlaceholder: "Buscar por nombre",
-        },
-        {
-            nombrevar: "lastname",
-            header: "Apellido",
-            filterPlaceholder: "Buscar por apellido",
-        },
-        {
-            nombrevar: "email",
-            header: "E-mail",
-            filterPlaceholder: "Buscar por e-mail",
-        },
-        {
-            nombrevar: "cellphone",
-            header: "Teléfono",
-            filterPlaceholder: "Buscar por teléfono",
         }
     ]; // Contiene los parámetros para crear columnas: ESPECIFICO
     const onRowSelect = (event) => {
@@ -241,21 +209,21 @@ function UsersTable(props) {
                     <span><strong>Los datos pueden estar desactualizados</strong> | intenta recargar la tabla</span>
                 </div>}
             <DataTable
-                value={users} // EDITABLE
+                value={products} // EDITABLE
                 resizableColumns
                 removableSort
                 paginator
                 scrollable
-                scrollHeight="70vh"
+                scrollHeight="60vh"
                 showGridlines
                 rows={25}
                 rowsPerPageOptions={[5, 10, 25, 50]}
                 size="small"
                 dataKey="id" // EDITABLE
                 filters={filters}
-                globalFilterFields={['id', 'name', 'lastname', 'ciudad', 'email', 'cellphone']} // EDITABLE
+                globalFilterFields={['id', 'name']} // EDITABLE
                 header={header}
-                emptyMessage="No se encontraron usuarios" // EDITABLE
+                emptyMessage="No se encontraron productos" // EDITABLE
                 selectionMode="single"
                 selection={selectedItem} 
                 onSelectionChange={(e) => setSelectedItem(e.value)} 
@@ -263,7 +231,7 @@ function UsersTable(props) {
                 onRowUnselect={onRowUnselect}
                 metaKeySelection={false}
                 stateStorage="session" 
-                stateKey="user-table-state" // EDITABLE
+                stateKey="prod-table-state" // EDITABLE
             >
                 {columnsData.map((column, index) => (
                     <Column
@@ -283,4 +251,4 @@ function UsersTable(props) {
     );
 }
 
-export default UsersTable;
+export default ProductsTable;

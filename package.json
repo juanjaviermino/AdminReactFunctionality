@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@azure/msal-browser": "^3.5.0",
+    "@azure/msal-react": "^2.0.7",
     "@reduxjs/toolkit": "^1.9.7",
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",

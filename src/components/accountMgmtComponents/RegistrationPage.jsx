@@ -1,52 +1,162 @@
 import React, {useState, useRef, useEffect} from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useUsers } from '../../services/useUsers';
 import { useCiudades } from '../../services/useCiudades';
 import { Toast } from 'primereact/toast';
+import { Dropdown } from 'primereact/dropdown';
 
 function RegistrationPage () {
 
-    const toast = useRef(null);
-    const navigate = useNavigate(); // Initialize the history object
-    const [object, setObject] = useState({role: 'user'});
+    //----------------- Servicios ----------------------
     const { createObject } = useUsers(); //EDITABLE
-    const { ciudades } = useCiudades(); //EDITABLE
-    const [selectedCiudadId, setSelectedCiudadId] = useState('9999');
+    const { ciudades, error: errorC, isLoading: isLoadingC, isValidating: isValidatingC, refresh: refreshC  } = useCiudades();
 
-    useEffect(()=>{
-        setObject({ ...object, ['ciudad_id']: selectedCiudadId }); // EDITABLE
-    }, [selectedCiudadId]);
+    //----------------- Setup ---------------------------
+    const toast = useRef(null);
+    const navigate = useNavigate();
 
-    useEffect(()=>{
-        console.log(object);
-    }, [object]);
+    //----------------- Estados --------------------------
+    const [isRefreshing, setIsRefreshing] = useState(false); // Para los dropdowns
+    const defaultNewUser = {
+        name: '',
+        lastname: '',
+        email: '',
+        password: '',
+        cellphone: '',
+        role: 'user',
+        ciudad_id: '',
+    };
+    const defaultRequiredFields = {
+        name: false,
+        lastname: false,
+        email: false,
+        password: false,
+        cellphone: false,
+        ciudad_id: false
+    };
+    const [isAnyEmpty, setisAnyEmpty] = useState(false);
+    const [newUser, setNewUser] = useState(defaultNewUser);
+    const [requiredFields, setRequiredFields] = useState(defaultRequiredFields);
+    const [selectedCiudad, setSelectedCiudad] = useState(null);
 
-    const resetStates = () => {
-        setObject({});
-        setIsEditing(false);
-        setSelectedId(null);
-        setSelectedCiudadId('9999');
-    }
+    //------------------------- Funciones del componente ---------------------
+
+    // ############ Dropdowns #################
+    
+    useEffect(() => {
+        if (selectedCiudad) {
+            setNewUser(prev => ({
+                ...prev,
+                ciudad_id: selectedCiudad.id
+            }));
+        }
+    }, [selectedCiudad]);
+
+    const refreshData = (e) => {
+        e.preventDefault();
+        setIsRefreshing(true);
+        refreshC();
+    }; // Refresca los datos del los dropdowns: GENERAL
+
+    useEffect(() => {
+        if (isRefreshing) {
+            setIsRefreshing(false);
+        }
+    }, [isValidatingC]);
+
+    const optionTemplate = (option) => {
+        return (
+            <div className="dropdown-item-container">
+                <span>{option.nombre}</span>
+            </div>
+        );
+    }; // EDITABLE: template para mostrar las opciones de un dropdown
+   
+    const selectedValueTemplate = (option, props) => {
+        if (option) {
+            return (
+                <div className="dropdown-item-container">
+                    <span>{option.nombre}</span>
+                </div>
+            );
+        }
+   
+        return <span>{props.placeholder}</span>;
+    }; //EDITABLE: template para mostrar el valor seleccionado de un dropdown
+
+    // ############ Fin Dropdowns #################
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setObject({ ...object, [name]: value }); // EDITABLE
-    };
+    
+        // Check if the input name is a key in the requiredFields
+        if (requiredFields.hasOwnProperty(name)) {
+            const updatedRequiredFields = { ...requiredFields };
+            updatedRequiredFields[name] = false; // Reset to false if the required field has been edited
+            setRequiredFields(updatedRequiredFields);
+        }
+    
+        // Update the newCliente state with the new value
+        setNewUser(prev => ({ ...prev, [name]: value }));
+    }; // Maneja el cambio en un input
 
+    const isEmptyValue = value => {
+        if (value === null || value === undefined) return true;
+        if (typeof value === 'string') return value.trim() === '';
+        if (typeof value === 'number') return isNaN(value) || value === 0;
+        if (Array.isArray(value)) return value.length === 0;
+        return false;
+    }; // Verifica si un valor específico está vacío
+
+    const validateRequiredFields = (obj) => {
+        const updatedRequiredFields = { ...defaultRequiredFields };
+    
+        // Iterate over the required field keys
+        Object.keys(updatedRequiredFields).forEach(key => {
+            updatedRequiredFields[key] = isEmptyValue(obj[key]);
+        });
+    
+        setRequiredFields(updatedRequiredFields);
+    
+        // Return true if any of the required fields is empty
+        return Object.values(updatedRequiredFields).some(value => value);
+    }; // Valida que los campos en REQUIRED_FIELDS no estén vacíos en el nuevo objeto
 
     const handleCreate = async (e) =>{
         e.preventDefault();
-        // Intentar el request usando el servicio
+        
+        // Verificar si existe algun campo requerido vacío
+        const anyFieldEmpty = validateRequiredFields(newUser);
+
+        if (anyFieldEmpty) {
+            setisAnyEmpty(true);
+            return;
+        } else {
+            setisAnyEmpty(false);
+        }
+
         try {
-            const response = await createObject(object);
+            const response = await createObject(newUser);
             if (response === 201) {
                 toast.current.show({
                     severity: 'success',
                     summary: 'Éxito',
-                    detail: 'Se añadió el registro con éxito',
+                    detail: '¡Bienvenido!',
                     life: 3000,
                 });
-                resetStates();
+                // Espera 3 segundos y luego redirige
+                setTimeout(() => {
+                    // Asumiendo que estás utilizando un Hook de React Router para la navegación
+                    navigate('/StraysFrontREACT/login');
+                }, 2000);
+            }
+            if (response === 409) {
+                toast.current.show({
+                    severity: 'info',
+                    summary: 'Error',
+                    detail: 'El email que ingresaste, ya existe',
+                    life: 3000,
+                });
             }
         } catch (error) {
             toast.current.show({
@@ -70,70 +180,103 @@ function RegistrationPage () {
                 <div className="form">
                     <h2>Ingresa tus datos</h2>
                     <form className="form__fields">
-                        <label htmlFor='nombre'>Nombre <span>*</span></label>
+                        <label>Nombre y apellido <span>*</span></label>
+                        <div className="form__fields--many">
+                            <input 
+                                className={`${requiredFields.name && 'form__fields--empty'}`}
+                                id="name"
+                                type="text" 
+                                onChange={handleInputChange} 
+                                name="name"
+                                value={newUser?.name || ''}
+                                placeholder='Nombre'
+                                required
+                                maxLength="20"/>
+                            <input 
+                                className={`${requiredFields.lastname && 'form__fields--empty'}`}
+                                id="lastname"
+                                type="text" 
+                                onChange={handleInputChange} 
+                                name="lastname"
+                                value={newUser?.lastname || ''}
+                                placeholder='Apellido'
+                                required
+                                maxLength="20"/>
+                        </div>
+                        <hr></hr>
+                        <label>Datos de ingreso <span>*</span></label>
+                        <div className="form__fields--many">
+                            <input 
+                                className={`${requiredFields.email && 'form__fields--empty'}`}
+                                id="mail"
+                                type="email" 
+                                onChange={handleInputChange} 
+                                name="email"
+                                value={newUser?.email || ''}
+                                placeholder='Email'
+                                required
+                                maxLength="30"/>
+                            <input 
+                                className={`${requiredFields.password && 'form__fields--empty'}`}
+                                id="password"
+                                type="password" 
+                                onChange={handleInputChange} 
+                                name="password"
+                                value={newUser?.password || ''}
+                                placeholder='Contraseña'
+                                required
+                                maxLength="20"/>
+                        </div>
+                        <hr></hr>
+                        <label>Teléfono <span>*</span></label>
                         <input 
-                            id="nombre"
-                            type="text" 
-                            onChange={handleInputChange} 
-                            name="name"
-                            value={object?.name || ''}
-                            placeholder='Nombre'
-                            required
-                            maxLength="20"/>
-                        <label htmlFor='apellido'>Apellido <span>*</span></label>
-                        <input 
-                            id="apellido"
-                            type="text" 
-                            onChange={handleInputChange} 
-                            name="lastname"
-                            value={object?.lastname || ''}
-                            placeholder='Apellido'
-                            required
-                            maxLength="20"/>
-                        <label htmlFor='mail'>Email <span>*</span></label>
-                        <input 
-                            id="mail"
-                            type="email" 
-                            onChange={handleInputChange} 
-                            name="email"
-                            value={object?.email || ''}
-                            placeholder='Email'
-                            required
-                            maxLength="30"/>
-                        <label htmlFor='nombre'>Contraseña <span>*</span></label>
-                        <input 
-                            id="mail"
-                            type="password" 
-                            onChange={handleInputChange} 
-                            name="password"
-                            value={object?.password || ''}
-                            placeholder='Contraseña'
-                            required
-                            maxLength="20"/>
-                        <label htmlFor='cellphone'>Teléfono <span>*</span></label>
-                        <input 
-                            id="cellphone"
-                            type="number" 
-                            onChange={handleInputChange} 
-                            name="cellphone"
-                            value={object?.cellphone || ''}
-                            placeholder='Teléfono'
-                            required
-                            maxLength="20"/>
-                        <label htmlFor="ciudad">Ciudad <span>*</span></label>
-                        <select
-                                id="ciudad"
-                                className="dropdown"
-                                value={selectedCiudadId}
-                                onChange={e => setSelectedCiudadId(e.target.value)}>
-                                <option value="9999">Selecciona una opción</option>
-                                {ciudades?.map(option => (
-                                <option key={option.id} value={option.id}>
-                                    {option.nombre}
-                                </option>
-                                ))}
-                        </select>
-
+                                className={`${requiredFields.cellphone && 'form__fields--empty'}`}
+                                id="cellphone"
+                                type="tel" 
+                                onChange={handleInputChange} 
+                                name="cellphone"
+                                value={newUser?.cellphone || ''}
+                                placeholder='Teléfono'
+                                required
+                                maxLength="10"/>
+                        <label>Ciudad <span>*</span></label>
+                        <div className="form__fields-dropdown">
+                            {
+                                errorC || !ciudades ? (
+                                    <div className="dropdown__error">
+                                        <div className="dropdown__error-msg">
+                                            {isLoadingC || (isRefreshing && isValidatingC) ?
+                                                <div className="spinnercontainer__spinner--small" />
+                                                 :
+                                            <span>Ocurrió un error</span>}
+                                        </div>
+                                        <button className="button--rounded-icon" onClick={refreshData}>
+                                            <i className="pi pi-refresh" style={{ fontSize: '0.8rem', margin: '0' }}></i>
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <Dropdown
+                                        className={`${requiredFields.ciudad_id && 'form__fields--empty'}`}
+                                        value={selectedCiudad}
+                                        onChange={(e) => setSelectedCiudad(e.value)}
+                                        options={ciudades}
+                                        optionLabel="nombre"
+                                        placeholder="Selecciona una ciudad"
+                                        filter
+                                        virtualScrollerOptions={{ itemSize: 38 }}
+                                        valueTemplate={selectedValueTemplate}
+                                        itemTemplate={optionTemplate}
+                                        style={{width:'100%'}}
+                                    />
+                                )
+                            }   
+                        </div>
+                        {isAnyEmpty &&
+                            <div className="emptyfields-msg">
+                                <i className="pi pi-exclamation-circle"></i>
+                                <span>Por favor, llena todos los datos <strong>requeridos</strong></span>
+                            </div>
+                        }
                         <button onClick={handleCreate} className="button--action">
                             Registrarse
                         </button>

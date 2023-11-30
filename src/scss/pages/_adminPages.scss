@@ -23,6 +23,15 @@
         padding: 25px;
         @include grid-child(2,1);
         @include flex(center, center);
+
+        &--users{
+            @include grid-child(2,1);
+            grid-column: 1 / span 3;
+            @include flex(center, start);
+            margin-top: 50px;
+        }
     }
+
+
     
 }

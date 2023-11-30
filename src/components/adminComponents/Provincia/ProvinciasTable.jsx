@@ -214,7 +214,7 @@ function ProvinciasTable(props) {
                 removableSort
                 paginator
                 scrollable
-                scrollHeight="70vh"
+                scrollHeight="60vh"
                 showGridlines
                 rows={25}
                 rowsPerPageOptions={[5, 10, 25, 50, 100]}
